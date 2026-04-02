@@ -1,6 +1,6 @@
 import db from '../config/db.js';
 
-const createRolesTable = () => {
+function createRolesTable() {
   db.exec(`
     CREATE TABLE IF NOT EXISTS roles(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -9,9 +9,9 @@ const createRolesTable = () => {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
     `)
-};
+}
 
-const createUsersTable = () => {
+function createUsersTable() {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,9 +25,9 @@ const createUsersTable = () => {
     FOREIGN KEY(role_id) REFERENCES roles(id)
     );
     `);
-};
+}
 
-const createRecordsTable = () => {
+function createRecordsTable() {
   db.exec(`
     CREATE TABLE IF NOT EXISTS financial_records(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,16 +42,16 @@ const createRecordsTable = () => {
     FOREIGN KEY (created_by) REFERENCES users(id)
     );
     `);
-};
+}
 
-const createIndexes = () => {
+function createIndexes() {
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
     CREATE INDEX IF NOT EXISTS idx_records_type ON financial_records(type);
     CREATE INDEX IF NOT EXISTS idx_records_date ON financial_records(record_date);
     CREATE INDEX IF NOT EXISTS idx_records_category ON financial_records(category);
     `);
-};
+}
 
 const runMigrations = () => {
   try {
