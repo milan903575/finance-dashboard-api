@@ -16,10 +16,20 @@ function findUserByEmail(email) {
   return stmt.get(email);
 }
 
+function getUsers() {
+  const stmt = db.prepare(`
+    SELECT u.id, u.name, u.email, r.name as role
+    FROM users AS u
+    JOIN roles AS r ON u.role_id = r.id
+    `);
+  return stmt.all();
+}
+
 
 const userRepository = {
   insertUser,
-  findUserByEmail
+  findUserByEmail,
+  getUsers
 };
 
 export default userRepository;

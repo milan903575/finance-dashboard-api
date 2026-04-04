@@ -12,6 +12,11 @@ class UserService {
     const result = userRepository.insertUser({ name, email, password_hash, role_id });
     return { id: result.lastInsertRowid, name, email, role_id }
   }
+
+  async getUsers() {
+    const users = userRepository.getUsers();
+    return users
+  }
 }
 
 export default new UserService();

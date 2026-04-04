@@ -11,8 +11,18 @@ async function createUser(req, res, next) {
   }
 }
 
+async function getUsers(req, res, next) {
+  try {
+    const users = await UserService.getUsers();
+    sendSuccess(res, 200, users, 'users fetched successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 const userController = {
-  createUser
+  createUser,
+  getUsers
 }
 
 export default userController;
