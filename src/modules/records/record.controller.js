@@ -11,9 +11,20 @@ async function createRecord(req, res, next) {
   }
 }
 
+async function getRecords(req, res, next) {
+  try {
+    const { type, category, from, to, page = 1, limit = 10 } = req.query;
+    const records = await RecordService.getRecords({ type, category, from, to, page, limit });
+    sendSuccess(res, 200, records, 'records fetched successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 
 const recordController = {
-  createRecord
+  createRecord,
+  getRecords
 };
 
 export default recordController;

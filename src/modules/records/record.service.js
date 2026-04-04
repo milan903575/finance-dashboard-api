@@ -14,6 +14,27 @@ class RecordService {
     const result = recordRepository.insertRecord({ amountInPaise, type, category, record_date, note, created_by });
     return { id: result.lastInsertRowid, amount, type, category, record_date, note, created_by: userExists.name };
   }
+
+  async getRecords({ type, category, from, to, page, limit }) {
+    const offset = (page - 1) * limit;
+    const records = recordRepository.getRecords({ type, category, from, to, offset, limit });
+
+    const filteredResult = records.map((record) => {
+      return {
+        id: record.id,
+        amount: convertMoney.paiseToRupees(record.amount),
+        type: record.type,
+        category: record.category,
+        record_date: record.record_date,
+        created_by: record.created_by,
+        created_at: record.created_at,
+        updated_at: record.updated_at
+      };
+    });
+    return filteredResult;
+  }
+
+
 }
 
 
