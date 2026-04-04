@@ -25,11 +25,21 @@ function getUsers() {
   return stmt.all();
 }
 
+function getUserById(id) {
+  const stmt = db.prepare(`
+    SELECT u.id, u.name, u.email, r.name as role
+    FROM users AS u
+    JOIN roles AS r ON u.role_id = r.id
+    WHERE u.id = ?
+    `);
+  return stmt.get(id);
+}
 
 const userRepository = {
   insertUser,
   findUserByEmail,
-  getUsers
+  getUsers,
+  getUserById
 };
 
 export default userRepository;

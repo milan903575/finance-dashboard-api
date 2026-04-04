@@ -20,9 +20,20 @@ async function getUsers(req, res, next) {
   }
 }
 
+async function getUser(req, res, next) {
+  try {
+    const { id } = req.params;
+    const user = await UserService.getUser(id);
+    sendSuccess(res, 200, user, 'user fetched successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 const userController = {
   createUser,
-  getUsers
+  getUsers,
+  getUser
 }
 
 export default userController;
