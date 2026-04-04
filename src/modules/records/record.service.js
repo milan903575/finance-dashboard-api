@@ -34,6 +34,14 @@ class RecordService {
     return filteredResult;
   }
 
+  async getRecord(id) {
+    const record = recordRepository.getRecordById(id);
+    if (!record) {
+      throw new AppError('record not found', 404);
+    }
+    return { ...record, amount: convertMoney.paiseToRupees(record.amount) }
+  }
+
 
 }
 

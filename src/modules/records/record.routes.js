@@ -7,4 +7,6 @@ router.get('/', recordController.getRecords);
 
 router.post('/', recordController.createRecord);
 
+router.get('/:id', recordController.getRecord);
+
 export default router;

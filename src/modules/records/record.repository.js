@@ -38,9 +38,20 @@ function getRecords(filters) {
   return stmt.all(...parameters);
 }
 
+function getRecordById(id) {
+  const stmt = db.prepare(`
+    SELECT r.id, r.amount, r.type, r.category, r.record_date, r.note, u.name AS created_by, r.created_at, r.updated_at
+    FROM financial_records AS r
+    JOIN users AS u ON r.created_by = u.id  
+    WHERE r.id = ?
+    `);
+  return stmt.get(id);
+}
+
 const recordRepository = {
   insertRecord,
-  getRecords
+  getRecords,
+  getRecordById
 }
 
 export default recordRepository;

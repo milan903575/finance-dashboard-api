@@ -21,10 +21,20 @@ async function getRecords(req, res, next) {
   }
 }
 
+async function getRecord(req, res, next) {
+  try {
+    const { id } = req.params;
+    const record = await RecordService.getRecord(id);
+    sendSuccess(res, 200, record, 'record fetched successfully');
+  } catch (error) {
+    next(error);
+  }
+}
 
 const recordController = {
   createRecord,
-  getRecords
+  getRecords,
+  getRecord
 };
 
 export default recordController;
