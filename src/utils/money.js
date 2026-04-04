@@ -1,11 +1,11 @@
 function rupeesToPaise(amount) {
-  const paise = amount * 100;
+  const paise = Math.round((amount + Number.EPSILON) * 100);
   return paise;
 }
 
 function paiseToRupees(amount) {
-  const rupees = amount / 100;
-  return paise;
+  const rupees = (amount / 100).toFixed(2);
+  return rupees;
 }
 
 const convertMoney = {
