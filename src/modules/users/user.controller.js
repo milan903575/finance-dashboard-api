@@ -41,11 +41,23 @@ async function updateUserRole(req, res, next) {
   }
 }
 
+async function updateUserStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const user = await UserService.updateUserStatus(id, status);
+    sendSuccess(res, 200, user, 'user status updated successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 const userController = {
   createUser,
   getUsers,
   getUser,
-  updateUserRole
+  updateUserRole,
+  updateUserStatus
 }
 
 export default userController;

@@ -18,7 +18,7 @@ function findUserByEmail(email) {
 
 function getUsers() {
   const stmt = db.prepare(`
-    SELECT u.id, u.name, u.email, r.name as role
+    SELECT u.id, u.name, u.email, u.is_active AS status, u.created_at, u.updated_at , r.name AS role
     FROM users AS u
     JOIN roles AS r ON u.role_id = r.id
     `);
@@ -27,7 +27,7 @@ function getUsers() {
 
 function getUserById(id) {
   const stmt = db.prepare(`
-    SELECT u.id, u.name, u.email, r.name as role
+    SELECT u.id, u.name, u.email, u.is_active AS status, u.created_at, u.updated_at , r.name AS role
     FROM users AS u
     JOIN roles AS r ON u.role_id = r.id
     WHERE u.id = ?
@@ -38,10 +38,19 @@ function getUserById(id) {
 function updateUserRole(id, role_id) {
   const stmt = db.prepare(`
     UPDATE users
-    SET role_id = ?
+    SET role_id = ?, updated_at = datetime('now')
     WHERE id = ?
     `);
   return stmt.run(role_id, id);
+}
+
+function updateUserStatus(id, status) {
+  const stmt = db.prepare(`
+    UPDATE users
+    SET is_active = ?, updated_at = datetime('now')
+    WHERE id = ?
+    `);
+  return stmt.run(status, id);
 }
 
 const userRepository = {
@@ -49,7 +58,8 @@ const userRepository = {
   findUserByEmail,
   getUsers,
   getUserById,
-  updateUserRole
+  updateUserRole,
+  updateUserStatus
 };
 
 export default userRepository;
