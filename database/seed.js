@@ -10,7 +10,7 @@ function seedRoles() {
 }
 
 try {
-  Roles();
+  seedRoles();
   console.log('Data inserted sucessfully');
 } catch (error) {
   console.error(`Seed Data Failed ${error}`);

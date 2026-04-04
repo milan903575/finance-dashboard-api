@@ -25,6 +25,15 @@ class UserService {
     }
     return user;
   }
+
+  async updateUserRole(id, role_id) {
+    const user = userRepository.getUserById(id);
+    if (!user) {
+      throw new AppError('user not found', 404);
+    }
+    userRepository.updateUserRole(id, role_id);
+    return userRepository.getUserById(id);
+  }
 }
 
 export default new UserService();

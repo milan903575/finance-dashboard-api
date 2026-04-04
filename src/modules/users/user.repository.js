@@ -35,11 +35,21 @@ function getUserById(id) {
   return stmt.get(id);
 }
 
+function updateUserRole(id, role_id) {
+  const stmt = db.prepare(`
+    UPDATE users
+    SET role_id = ?
+    WHERE id = ?
+    `);
+  return stmt.run(role_id, id);
+}
+
 const userRepository = {
   insertUser,
   findUserByEmail,
   getUsers,
-  getUserById
+  getUserById,
+  updateUserRole
 };
 
 export default userRepository;

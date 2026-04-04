@@ -30,10 +30,22 @@ async function getUser(req, res, next) {
   }
 }
 
+async function updateUserRole(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { role_id } = req.body;
+    const user = await UserService.updateUserRole(id, role_id);
+    sendSuccess(res, 200, user, 'user role updated successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 const userController = {
   createUser,
   getUsers,
-  getUser
+  getUser,
+  updateUserRole
 }
 
 export default userController;
