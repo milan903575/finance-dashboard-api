@@ -13,6 +13,18 @@ class DashboardService {
       net_balance: convertMoney.paiseToRupees(netBalance)
     };
   }
+
+  async getCategoryTotals() {
+    const categoryTotals = dashboardRepository.getCategoryTotals();
+    const filteredResult = categoryTotals.map((categoryTotal) => {
+      return {
+        ...categoryTotal,
+        total: convertMoney.paiseToRupees(categoryTotal.total)
+      };
+    });
+    return filteredResult;
+  }
+
 }
 
 export default new DashboardService();

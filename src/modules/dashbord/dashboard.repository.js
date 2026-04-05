@@ -9,8 +9,20 @@ function getDashboardSummary() {
   return stmt.get();
 }
 
+function getCategoryTotals() {
+  const stmt = db.prepare(`
+    SELECT category, type, COALESCE(SUM(amount), 0) AS total
+    FROM financial_records
+    GROUP BY category, type
+    ORDER BY total DESC
+    `);
+
+  return stmt.all();
+}
+
 const dashboardRepository = {
-  getDashboardSummary
+  getDashboardSummary,
+  getCategoryTotals
 }
 
 export default dashboardRepository;

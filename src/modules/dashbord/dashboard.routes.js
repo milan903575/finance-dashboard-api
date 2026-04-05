@@ -5,4 +5,6 @@ const router = express.Router();
 
 router.get('/summary', dashboardController.getDashboardSummary);
 
+router.get('/category-totals', dashboardController.getCategoryTotals);
+
 export default router;

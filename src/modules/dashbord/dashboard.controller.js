@@ -11,8 +11,19 @@ async function getDashboardSummary(req, res, next) {
   }
 }
 
+async function getCategoryTotals(req, res, next) {
+  try {
+    const categoryTotals = await DashboardService.getCategoryTotals();
+    sendSuccess(res, 200, categoryTotals, 'category totals fetched successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
+
 const dashboardController = {
-  getDashboardSummary
+  getDashboardSummary,
+  getCategoryTotals
 }
 
 export default dashboardController;
