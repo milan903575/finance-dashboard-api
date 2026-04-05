@@ -31,10 +31,22 @@ async function getRecord(req, res, next) {
   }
 }
 
+async function updateRecord(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { amount, type, category, record_date, note } = req.body;
+    const record = await RecordService.updateRecord({ id, amount, type, category, record_date, note });
+    sendSuccess(res, 200, record, 'record updated successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 const recordController = {
   createRecord,
   getRecords,
-  getRecord
+  getRecord,
+  updateRecord
 };
 
 export default recordController;

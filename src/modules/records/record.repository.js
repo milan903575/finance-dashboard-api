@@ -4,7 +4,7 @@ function insertRecord(record) {
   const stmt = db.prepare(`
   INSERT INTO financial_records(amount, type, category, record_date, note, created_by) VALUES(?, ?, ?, ?, ?, ?)
   `);
-  return stmt.run(record.amountInPaise, record.type, record.category, record.record_date, record.note, record.created_by);
+  return stmt.run(record.amount, record.type, record.category, record.record_date, record.note, record.created_by);
 }
 
 function getRecords(filters) {
@@ -48,10 +48,51 @@ function getRecordById(id) {
   return stmt.get(id);
 }
 
+function updateRecord(record) {
+  const values = [];
+  const parameters = [];
+
+
+  if (record.amount) {
+    values.push(` amount = ? `);
+    parameters.push(record.amount);
+  }
+
+  if (record.type) {
+    values.push(` type = ? `);
+    parameters.push(record.type);
+  }
+
+  if (record.category) {
+    values.push(` category = ? `);
+    parameters.push(record.category);
+  }
+
+  if (record.record_date) {
+    values.push(` record_date = ? `);
+    parameters.push(record.record_date);
+  }
+
+  if (record.note) {
+    values.push(` note = ? `);
+    parameters.push(record.note);
+  }
+
+  const query = `
+    UPDATE financial_records
+    SET ${values.join(', ')}, updated_at = datetime('now')
+    WHERE id = ?
+    `;
+  parameters.push(record.id);
+  const stmt = db.prepare(query);
+  return stmt.run(...parameters);
+}
+
 const recordRepository = {
   insertRecord,
   getRecords,
-  getRecordById
+  getRecordById,
+  updateRecord
 }
 
 export default recordRepository;
