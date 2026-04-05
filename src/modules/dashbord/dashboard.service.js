@@ -39,6 +39,17 @@ class DashboardService {
     return filteredResult;
   }
 
+  async getRecentActivity() {
+    const recentActivities = dashboardRepository.getRecentActivity();
+    const filteredResult = recentActivities.map((recentActivity) => {
+      return {
+        ...recentActivity,
+        amount: convertMoney.paiseToRupees(recentActivity.amount)
+      };
+    });
+    return filteredResult;
+  }
+
 }
 
 export default new DashboardService();

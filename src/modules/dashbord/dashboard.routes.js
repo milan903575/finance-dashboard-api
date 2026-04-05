@@ -9,4 +9,6 @@ router.get('/category-totals', dashboardController.getCategoryTotals);
 
 router.get('/trends', dashboardController.getMonthlyTrends);
 
+router.get('/recent', dashboardController.getRecentActivity);
+
 export default router;

@@ -29,10 +29,20 @@ async function getMonthlyTrends(req, res, next) {
   }
 }
 
+async function getRecentActivity(req, res, next) {
+  try {
+    const recentActivities = await DashboardService.getRecentActivity();
+    sendSuccess(res, 200, recentActivities, 'recent activity fetched successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 const dashboardController = {
   getDashboardSummary,
   getCategoryTotals,
-  getMonthlyTrends
+  getMonthlyTrends,
+  getRecentActivity
 }
 
 export default dashboardController;

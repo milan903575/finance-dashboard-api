@@ -31,10 +31,22 @@ function getMonthlyTrends() {
   return stmt.all();
 }
 
+function getRecentActivity() {
+  const stmt = db.prepare(`
+    SELECT r.id, r.amount, r.type, r.category, r.record_date, r.note, u.name AS created_by
+    FROM financial_records AS r
+    JOIN users AS u ON r.created_by = u.id
+    ORDER BY r.created_at DESC
+    LIMIT 5
+    `);
+  return stmt.all()
+}
+
 const dashboardRepository = {
   getDashboardSummary,
   getCategoryTotals,
-  getMonthlyTrends
+  getMonthlyTrends,
+  getRecentActivity
 }
 
 export default dashboardRepository;
