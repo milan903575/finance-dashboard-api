@@ -53,6 +53,15 @@ class RecordService {
     return { ...updatedRecord, amount: convertMoney.paiseToRupees(updatedRecord.amount) };
   }
 
+  async deleteRecord(id) {
+    const recordExist = recordRepository.getRecordById(id);
+    if (!recordExist) {
+      throw new AppError('record not found', 404);
+    }
+    recordRepository.deleteRecord(id);
+    return 'record deleted';
+  }
+
 }
 
 

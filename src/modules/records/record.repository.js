@@ -88,11 +88,20 @@ function updateRecord(record) {
   return stmt.run(...parameters);
 }
 
+function deleteRecord(id) {
+  const stmt = db.prepare(`
+    DELETE FROM financial_records
+    WHERE id = ?
+    `);
+  return stmt.run(id);
+}
+
 const recordRepository = {
   insertRecord,
   getRecords,
   getRecordById,
-  updateRecord
+  updateRecord,
+  deleteRecord
 }
 
 export default recordRepository;

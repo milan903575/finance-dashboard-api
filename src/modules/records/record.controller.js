@@ -42,11 +42,22 @@ async function updateRecord(req, res, next) {
   }
 }
 
+async function deleteRecord(req, res, next) {
+  try {
+    const { id } = req.params;
+    const result = await RecordService.deleteRecord(id);
+    sendSuccess(res, 200, result, 'record deleted successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 const recordController = {
   createRecord,
   getRecords,
   getRecord,
-  updateRecord
+  updateRecord,
+  deleteRecord
 };
 
 export default recordController;

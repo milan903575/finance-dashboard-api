@@ -11,4 +11,6 @@ router.get('/:id', recordController.getRecord);
 
 router.patch('/:id', recordController.updateRecord);
 
+router.delete('/:id', recordController.deleteRecord);
+
 export default router;
