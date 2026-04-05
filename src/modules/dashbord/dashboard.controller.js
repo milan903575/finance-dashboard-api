@@ -20,10 +20,19 @@ async function getCategoryTotals(req, res, next) {
   }
 }
 
+async function getMonthlyTrends(req, res, next) {
+  try {
+    const monthlyTrends = await DashboardService.getMonthlyTrends();
+    sendSuccess(res, 200, monthlyTrends, 'monthly trends fetched successfully');
+  } catch (error) {
+    next(error);
+  }
+}
 
 const dashboardController = {
   getDashboardSummary,
-  getCategoryTotals
+  getCategoryTotals,
+  getMonthlyTrends
 }
 
 export default dashboardController;

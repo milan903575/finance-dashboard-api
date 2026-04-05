@@ -25,6 +25,20 @@ class DashboardService {
     return filteredResult;
   }
 
+  async getMonthlyTrends() {
+    const monthlyTrends = dashboardRepository.getMonthlyTrends();
+    const filteredResult = monthlyTrends.map((monthlyTrend) => {
+      const netBalance = monthlyTrend.total_income - monthlyTrend.total_expense;
+      return {
+        month: monthlyTrend.month,
+        total_income: convertMoney.paiseToRupees(monthlyTrend.total_income),
+        total_expense: convertMoney.paiseToRupees(monthlyTrend.total_expense),
+        net_balance: convertMoney.paiseToRupees(netBalance)
+      };
+    });
+    return filteredResult;
+  }
+
 }
 
 export default new DashboardService();
