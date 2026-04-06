@@ -13,10 +13,10 @@ function validateId(req, res, next) {
 }
 
 function createUser(req, res, next) {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role_id } = req.body;
 
-  if (!name || !email || !password || !role) {
-    throw new AppError('name, email, password and role are required', 400);
+  if (!name || !email || !password || role_id === undefined) {
+    throw new AppError('name, email, password and role_id are required', 400);
   }
 
   if (typeof name !== 'string' || name.trim() === '') {
@@ -32,12 +32,11 @@ function createUser(req, res, next) {
     throw new AppError('password must be at least 6 characters', 400);
   }
 
-  if (!Object.values(ROLES).includes(role)) {
-    throw new AppError('role must be viewer, analyst or admin', 400);
+  if (typeof role_id !== 'number' || ![1, 2, 3].includes(role_id)) {
+    throw new AppError('role_id must be 1 (viewer), 2 (analyst), or 3 (admin)', 400);
   }
 
   next();
-
 }
 
 function updateUserRole(req, res, next) {
