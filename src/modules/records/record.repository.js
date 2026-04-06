@@ -4,6 +4,7 @@ function insertRecord(record) {
   const stmt = db.prepare(`
   INSERT INTO financial_records(amount, type, category, record_date, note, created_by) VALUES(?, ?, ?, ?, ?, ?)
   `);
+
   return stmt.run(record.amount, record.type, record.category, record.record_date, record.note, record.created_by);
 }
 
@@ -35,6 +36,7 @@ function getRecords(filters) {
   parameters.push(filters.limit, filters.offset);
 
   const stmt = db.prepare(query);
+
   return stmt.all(...parameters);
 }
 
@@ -45,6 +47,7 @@ function getRecordById(id) {
     JOIN users AS u ON r.created_by = u.id  
     WHERE r.id = ?
     `);
+
   return stmt.get(id);
 }
 
@@ -85,6 +88,7 @@ function updateRecord(record) {
     `;
   parameters.push(record.id);
   const stmt = db.prepare(query);
+
   return stmt.run(...parameters);
 }
 
@@ -93,6 +97,7 @@ function deleteRecord(id) {
     DELETE FROM financial_records
     WHERE id = ?
     `);
+
   return stmt.run(id);
 }
 

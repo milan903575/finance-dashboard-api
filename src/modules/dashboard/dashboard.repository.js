@@ -39,6 +39,7 @@ function getRecentActivity() {
     ORDER BY r.created_at DESC
     LIMIT 5
     `);
+
   return stmt.all()
 }
 

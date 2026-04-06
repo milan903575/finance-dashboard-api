@@ -23,6 +23,7 @@ async function getUsers(req, res, next) {
 async function getUser(req, res, next) {
   try {
     const { id } = req.params;
+
     const user = await UserService.getUser(id);
     sendSuccess(res, 200, user, 'user fetched successfully');
   } catch (error) {
@@ -34,6 +35,7 @@ async function updateUserRole(req, res, next) {
   try {
     const { id } = req.params;
     const { role_id } = req.body;
+
     const user = await UserService.updateUserRole(id, role_id);
     sendSuccess(res, 200, user, 'user role updated successfully');
   } catch (error) {
@@ -45,6 +47,7 @@ async function updateUserStatus(req, res, next) {
   try {
     const { id } = req.params;
     const { status } = req.body;
+
     const user = await UserService.updateUserStatus(id, status);
     sendSuccess(res, 200, user, 'user status updated successfully');
   } catch (error) {

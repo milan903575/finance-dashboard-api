@@ -4,6 +4,7 @@ function insertUser(user) {
   const stmt = db.prepare(`
   INSERT INTO users(name, email, password_hash, role_id) values (?, ?, ?, ?)
   `);
+
   return stmt.run(user.name, user.email, user.password_hash, user.role_id);
 }
 
@@ -13,6 +14,7 @@ function findUserByEmail(email) {
     FROM users
     WHERE email = ?
     `);
+
   return stmt.get(email);
 }
 
@@ -22,6 +24,7 @@ function getUsers() {
     FROM users AS u
     JOIN roles AS r ON u.role_id = r.id
     `);
+
   return stmt.all();
 }
 
@@ -32,6 +35,7 @@ function getUserById(id) {
     JOIN roles AS r ON u.role_id = r.id
     WHERE u.id = ?
     `);
+
   return stmt.get(id);
 }
 
@@ -41,6 +45,7 @@ function updateUserRole(id, role_id) {
     SET role_id = ?, updated_at = datetime('now')
     WHERE id = ?
     `);
+
   return stmt.run(role_id, id);
 }
 
@@ -50,6 +55,7 @@ function updateUserStatus(id, status) {
     SET is_active = ?, updated_at = datetime('now')
     WHERE id = ?
     `);
+
   return stmt.run(status, id);
 }
 

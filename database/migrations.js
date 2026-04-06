@@ -59,10 +59,10 @@ const runMigrations = () => {
     createUsersTable();
     createRecordsTable();
     createIndexes();
-    console.log('All tables created successfully');
+    console.log('all tables created and index successfully');
   }
   catch (error) {
-    console.error(`Migration Failed: ${error.message}`);
+    console.error(`migration failed: ${error.message}`);
   }
 };
 

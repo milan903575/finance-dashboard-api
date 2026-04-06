@@ -4,6 +4,7 @@ import { sendSuccess } from '../../utils/response.helper.js';
 async function createRecord(req, res, next) {
   try {
     const { amount, type, category, record_date, note, created_by } = req.body;
+
     const record = await RecordService.createRecord({ amount, type, category, record_date, note, created_by });
     sendSuccess(res, 201, record, 'record created successfully');
   } catch (error) {
@@ -14,6 +15,7 @@ async function createRecord(req, res, next) {
 async function getRecords(req, res, next) {
   try {
     const { type, category, from, to, page = 1, limit = 10 } = req.query;
+
     const records = await RecordService.getRecords({ type, category, from, to, page, limit });
     sendSuccess(res, 200, records, 'records fetched successfully');
   } catch (error) {
@@ -24,6 +26,7 @@ async function getRecords(req, res, next) {
 async function getRecord(req, res, next) {
   try {
     const { id } = req.params;
+
     const record = await RecordService.getRecord(id);
     sendSuccess(res, 200, record, 'record fetched successfully');
   } catch (error) {
@@ -35,6 +38,7 @@ async function updateRecord(req, res, next) {
   try {
     const { id } = req.params;
     const { amount, type, category, record_date, note } = req.body;
+
     const record = await RecordService.updateRecord({ id, amount, type, category, record_date, note });
     sendSuccess(res, 200, record, 'record updated successfully');
   } catch (error) {
@@ -45,6 +49,7 @@ async function updateRecord(req, res, next) {
 async function deleteRecord(req, res, next) {
   try {
     const { id } = req.params;
+
     const result = await RecordService.deleteRecord(id);
     sendSuccess(res, 200, result, 'record deleted successfully');
   } catch (error) {
