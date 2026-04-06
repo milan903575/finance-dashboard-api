@@ -60,19 +60,19 @@ function updateUserRole(req, res, next) {
 
 function updateUserStatus(req, res, next) {
   validateId(req, res, (err) => {
-
     if (err) return next(err);
 
     const { status } = req.body;
 
-    if (!status) return next(new AppError('status is required', 400));
+    if (status === undefined || status === null) {
+      return next(new AppError('status is required', 400));
+    }
 
-    if (!['active', 'inactive'].includes(status)) {
-      return next(new AppError('status must be active or inactive', 400));
+    if (![0, 1].includes(Number(status))) {
+      return next(new AppError('status must be 0 or 1', 400));
     }
 
     next();
-
   });
 }
 
