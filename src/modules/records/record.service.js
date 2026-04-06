@@ -12,8 +12,10 @@ class RecordService {
       throw new AppError('user not found', 404);
     }
 
+    const amountInPaise = convertMoney.rupeesToPaise(amount);
+
     const result = recordRepository.insertRecord({
-      amount: convertMoney.rupeesToPaise(amount),
+      amount: amountInPaise,
       type,
       category,
       record_date,

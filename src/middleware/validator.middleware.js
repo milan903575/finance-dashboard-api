@@ -41,19 +41,21 @@ function createUser(req, res, next) {
 
 function updateUserRole(req, res, next) {
   validateId(req, res, (err) => {
-
     if (err) return next(err);
 
-    const { role } = req.body;
+    const { role_id } = req.body;
 
-    if (!role) return next(new AppError('role is required', 400));
+    if (role_id === undefined) {
+      return next(new AppError('role_id is required', 400));
+    }
 
-    if (!Object.values(ROLES).includes(role)) {
-      return next(new AppError('role must be viewer, analyst or admin', 400));
+    if (typeof role_id !== 'number' || ![1, 2, 3].includes(role_id)) {
+      return next(
+        new AppError('role_id must be 1 (viewer), 2 (analyst), or 3 (admin)', 400)
+      );
     }
 
     next();
-
   });
 }
 
