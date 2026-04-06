@@ -9,7 +9,7 @@ function insertUser(user) {
 
 function findUserByEmail(email) {
   const stmt = db.prepare(`
-    SELECT email 
+    SELECT id, email, password_hash
     FROM users
     WHERE email = ?
     `);

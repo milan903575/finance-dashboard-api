@@ -5,11 +5,12 @@ import { ROLES } from '../constants/roles.js'
 import userRoutes from './users/user.routes.js';
 import recordRoutes from './records/record.routes.js';
 import dashboardRoutes from './dashboard/dashboard.routes.js';
+import authenticate from '../middleware/authentication.middleware.js';
 
 
 const router = express.Router();
 
-router.use('/users', authorize(ROLES.ADMIN), userRoutes);
+router.use('/users', authenticate, authorize(ROLES.ADMIN), userRoutes);
 
 router.use('/records', recordRoutes);
 
