@@ -34,8 +34,8 @@ function seedRecords() {
   stmt.run(85000, 'income', 'salary', '2024-02-01', 'February salary', 1);
   stmt.run(25000, 'expense', 'rent', '2024-02-05', null, 1);
   stmt.run(7200, 'expense', 'groceries', '2024-02-08', null, 1);
-  stmt.run(12000, 'income', 'freelance', '2024-02-12', 'Banner design', 2);
-  stmt.run(2400, 'expense', 'transport', '2024-02-15', 'Cab fares', 3);
+  stmt.run(12000, 'income', 'freelance', '2024-02-12', 'Banner design', 1);
+  stmt.run(2400, 'expense', 'transport', '2024-02-15', 'Cab fares', 1);
   stmt.run(85000, 'income', 'salary', '2024-03-01', 'March salary', 1);
   stmt.run(25000, 'expense', 'rent', '2024-03-05', null, 1);
   stmt.run(9100, 'expense', 'groceries', '2024-03-09', null, 1);
