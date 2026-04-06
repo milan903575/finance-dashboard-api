@@ -1,15 +1,18 @@
 import express from 'express';
+import authorize from '../middleware/authorization.middleware.js';
+import { ROLES } from '../constants/roles.js'
+
 import userRoutes from './users/user.routes.js';
 import recordRoutes from './records/record.routes.js';
-import dashboardRoutes from './dashbord/dashboard.routes.js';
+import dashboardRoutes from './dashboard/dashboard.routes.js';
 
 
 const router = express.Router();
 
-router.use('/users', userRoutes);
+router.use('/users', authorize(ROLES.ADMIN), userRoutes);
 
 router.use('/records', recordRoutes);
 
-router.use('/dashboard', dashboardRoutes);
+router.use('/dashboard', authorize(ROLES.VIEWER, ROLES.ANALYST, ROLES.ADMIN), dashboardRoutes);
 
 export default router;
