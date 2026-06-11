@@ -1,30 +1,29 @@
 # Finance Dashboard API
 
-A backend REST API for a finance dashboard system built with **Node.js**, **Express**, and **SQLite (better-sqlite3)**. The system supports financial record management, role-based access control, and dashboard summary analytics.
+A backend REST API for a finance dashboard system built with **Node.js**, **Express**, and **PostgreSQL**. The system supports financial record management, role-based access control, and dashboard summary analytics.
 
-***
+---
 
 ## Tech Stack
 
 | Layer | Choice |
 |---|---|
-| Runtime | Node.js v20+ (ESM) |
+| Runtime | Node.js v18+ (ESM) |
 | Framework | Express.js |
-| Database | SQLite via better-sqlite3 |
+| Database | PostgreSQL |
 | Auth | Mock auth (hardcoded email header) |
-| Validation | Custom middleware (no third-party library) |
+| Validation | Custom middleware |
 
-***
+---
 
 ## Project Structure
 
-```
+```text
 FINANCE-DASHBOARD-API/
 ├── config/
-│   └── db.js                          # SQLite database connection
+│   └── db.js                          # PostgreSQL database connection
 ├── database/
-│   ├── finance.db                     # SQLite database file
-│   ├── migrations.js                  # Table creation
+│   ├── migrations.js                  # Table creation (PostgreSQL compatible)
 │   └── seed.js                        # Seed roles, users, and records
 ├── src/
 │   ├── constants/
@@ -62,13 +61,14 @@ FINANCE-DASHBOARD-API/
 └── package.json
 ```
 
-***
+---
 
 ## Setup
 
 ### Prerequisites
 
-- Node.js v20+
+- Node.js v18+
+- PostgreSQL
 
 ### 1. Clone and install
 
@@ -80,17 +80,22 @@ npm install
 
 ### 2. Configure environment
 
-Create a `.env` file and copy the contents from `.env.example`:
+Create a `.env` file and configure your PostgreSQL connection:
 
 ```env
 PORT=3000
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_NAME=finance
 ```
 
 ### 3. Initialise the database
 
 ```bash
-cd database
-node migrations.js
+node database/migrations.js
 ```
 
 This creates all tables and indexes.
@@ -98,8 +103,7 @@ This creates all tables and indexes.
 ### 4. Seed the database
 
 ```bash
-cd database
-node seed.js
+node database/seed.js
 ```
 
 This inserts:
@@ -115,15 +119,15 @@ npm start
 
 Server runs at `http://localhost:3000`
 
-***
+---
 
 ## Mock Authentication
 
 Authentication is simulated via a hardcoded email in `authentication.middleware.js`. If the user is found, it sets `req.user = user` and passes to the next middleware. All protected routes require this header.
 
-To test protected routes, change the hardcoded email in `authentication.middleware.js`. The current email is `milan@gmail.com` (admin) which has access to all routes.
+To test protected routes, change the hardcoded email in `authentication.middleware.js`.
 
-```
+```http
 x-user-email: milan@gmail.com
 ```
 
@@ -135,7 +139,7 @@ x-user-email: milan@gmail.com
 | sana@gmail.com | analyst |
 | shreyas@gmail.com | viewer |
 
-***
+---
 
 ## Roles and Permissions
 
@@ -150,7 +154,7 @@ x-user-email: milan@gmail.com
 | Create users | No | No | Yes |
 | Update user role / status | No | No | Yes |
 
-***
+---
 
 ## API Reference
 
@@ -195,7 +199,7 @@ x-user-email: milan@gmail.com
 
 > `1` = active, `0` = inactive
 
-***
+---
 
 ### Record Routes — `/api/records`
 
@@ -226,7 +230,7 @@ x-user-email: milan@gmail.com
 
 #### Get Records with Filters — `GET /api/records`
 
-```
+```http
 GET /api/records?type=income&from=2024-01-01&to=2024-03-31&page=1&limit=10
 ```
 
@@ -252,7 +256,7 @@ GET /api/records?type=income&from=2024-01-01&to=2024-03-31&page=1&limit=10
 
 > At least one field required. Updatable fields: `amount`, `type`, `category`, `record_date`, `note`.
 
-***
+---
 
 ### Dashboard Routes — `/api/dashboard`
 
@@ -314,13 +318,14 @@ GET /api/records?type=income&from=2024-01-01&to=2024-03-31&page=1&limit=10
 }
 ```
 
-***
+---
 
 ## Response Format
 
-All responses follow a consistent structure handled by `response.helper.js`:
+All responses follow a consistent structure handled by `response.helper.js`.
 
-**Success**
+### Success
+
 ```json
 {
   "success": true,
@@ -329,7 +334,8 @@ All responses follow a consistent structure handled by `response.helper.js`:
 }
 ```
 
-**Error**
+### Error
+
 ```json
 {
   "success": false,
@@ -337,7 +343,7 @@ All responses follow a consistent structure handled by `response.helper.js`:
 }
 ```
 
-***
+---
 
 ## Error Handling
 
@@ -352,29 +358,29 @@ Errors are handled centrally through `error.middleware.js` using the custom `App
 | 409 | Conflict — user or record already exists |
 | 500 | Internal server error |
 
-***
+---
 
 ## Validation
 
 Validation is handled by a custom `validator.middleware.js` — no third-party library used.
 
 - `throw new AppError(...)` is used in direct synchronous middleware
-- `next(new AppError(...))` is used inside nested callbacks (e.g. when chaining `validateId` inside another validator) — this was a key challenge encountered, as `throw` inside a callback is not caught by Express
+- `next(new AppError(...))` is used inside nested callbacks when chaining validations
 
-***
+---
 
 ## Assumptions
 
 - Mock auth is intentional — the assignment permits it and the focus is on backend structure and access control logic
 - Each user is assigned exactly one role
 
-***
+---
 
 ## Tradeoffs
 
-- The `DELETE /api/records/:id` endpoint returns a `200` status with a success message instead of the standard `204 No Content`. This decision was made to keep the response format consistent and provide meaningful feedback to the frontend
+- The `DELETE /api/records/:id` endpoint returns a `200` status with a success message instead of the standard `204 No Content` to keep the response format consistent
 
-***
+---
 
 ## Optional Features Implemented
 
@@ -385,18 +391,12 @@ Validation is handled by a custom `validator.middleware.js` — no third-party l
 - [x] Custom validation middleware
 - [x] Role-based access control middleware
 - [x] Consistent response helper
+- [x] Database migration to PostgreSQL
 - [x] Database indexes for optimised query performance
 
-
-***
-
-## AI Assistance
-
-All code in this project was written from scratch — including project structure, middleware, services, repositories, and business logic. AI was used only to understand specific types of errors encountered during development (such as the `throw` vs `next(error)` issue in Express callbacks) and to help structure and draft this README based on the actual project details.
-
-***
+---
 
 ## Contact
 
-**Milan**
+**Milan**  
 GitHub: [milan903575](https://github.com/milan903575)
