@@ -4,9 +4,8 @@ import userRepository from '../users/user.repository.js';
 import convertMoney from '../../utils/money.js';
 
 class RecordService {
-
   async createRecord({ amount, type, category, record_date, note, created_by }) {
-    const userExists = userRepository.getUserById(created_by);
+    const userExists = await userRepository.getUserById(created_by);
 
     if (!userExists) {
       throw new AppError('user not found', 404);
@@ -14,7 +13,7 @@ class RecordService {
 
     const amountInPaise = convertMoney.rupeesToPaise(amount);
 
-    const result = recordRepository.insertRecord({
+    const record = await recordRepository.insertRecord({
       amount: amountInPaise,
       type,
       category,
@@ -24,32 +23,36 @@ class RecordService {
     });
 
     return {
-      id: result.lastInsertRowid,
-      amount: convertMoney.paiseToRupees(amountInPaise),
-      type,
-      category,
-      record_date,
-      note,
+      id: record.id,
+      amount: convertMoney.paiseToRupees(record.amount),
+      type: record.type,
+      category: record.category,
+      record_date: record.record_date,
+      note: record.note,
       created_by: userExists.name
     };
   }
 
   async getRecords({ type, category, from, to, page, limit }) {
     const offset = (page - 1) * limit;
-    const records = recordRepository.getRecords({ type, category, from, to, offset, limit });
 
-    const filteredResult = records.map((record) => {
-      return {
-        ...record,
-        amount: convertMoney.paiseToRupees(record.amount)
-      };
+    const records = await recordRepository.getRecords({
+      type,
+      category,
+      from,
+      to,
+      offset,
+      limit
     });
 
-    return filteredResult;
+    return records.map((record) => ({
+      ...record,
+      amount: convertMoney.paiseToRupees(record.amount)
+    }));
   }
 
   async getRecord(id) {
-    const record = recordRepository.getRecordById(id);
+    const record = await recordRepository.getRecordById(id);
 
     if (!record) {
       throw new AppError('record not found', 404);
@@ -58,19 +61,19 @@ class RecordService {
     return {
       ...record,
       amount: convertMoney.paiseToRupees(record.amount)
-    }
+    };
   }
 
   async updateRecord({ id, amount, type, category, record_date, note }) {
-    const record = recordRepository.getRecordById(id);
+    const record = await recordRepository.getRecordById(id);
 
     if (!record) {
       throw new AppError('record not found', 404);
     }
 
-    const amountInPaise = amount !== undefined ? convertMoney.rupeesToPaise(amount) : undefined;
+    const amountInPaise = amount != null ? convertMoney.rupeesToPaise(amount) : amount;
 
-    recordRepository.updateRecord({
+    const updatedRecord = await recordRepository.updateRecord({
       id,
       amount: amountInPaise,
       type,
@@ -79,8 +82,6 @@ class RecordService {
       note
     });
 
-    const updatedRecord = recordRepository.getRecordById(id);
-
     return {
       ...updatedRecord,
       amount: convertMoney.paiseToRupees(updatedRecord.amount)
@@ -88,16 +89,16 @@ class RecordService {
   }
 
   async deleteRecord(id) {
-    const recordExist = recordRepository.getRecordById(id);
+    const recordExist = await recordRepository.getRecordById(id);
+
     if (!recordExist) {
       throw new AppError('record not found', 404);
     }
-    recordRepository.deleteRecord(id);
+
+    await recordRepository.deleteRecord(id);
 
     return 'record deleted';
   }
-
 }
-
 
 export default new RecordService();

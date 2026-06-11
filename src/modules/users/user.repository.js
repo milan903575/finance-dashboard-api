@@ -1,62 +1,73 @@
 import db from '../../../config/db.js';
 
-function insertUser(user) {
-  const stmt = db.prepare(`
-  INSERT INTO users(name, email, password_hash, role_id) values (?, ?, ?, ?)
-  `);
+async function insertUser(user) {
+  const query = `
+    INSERT INTO users (name, email, password_hash, role_id)
+    VALUES ($1, $2, $3, $4)
+    RETURNING id, name, email, role_id, is_active, created_at, updated_at
+  `;
 
-  return stmt.run(user.name, user.email, user.password_hash, user.role_id);
+  const values = [user.name, user.email, user.password_hash, user.role_id];
+  const result = await db.query(query, values);
+  return result.rows[0];
 }
 
-function findUserByEmail(email) {
-  const stmt = db.prepare(`
+async function findUserByEmail(email) {
+  const query = `
     SELECT id, email, password_hash
     FROM users
-    WHERE email = ?
-    `);
+    WHERE email = $1
+  `;
 
-  return stmt.get(email);
+  const result = await db.query(query, [email]);
+  return result.rows[0];
 }
 
-function getUsers() {
-  const stmt = db.prepare(`
-    SELECT u.id, u.name, u.email, u.is_active AS status, u.created_at, u.updated_at , r.name AS role
+async function getUsers() {
+  const query = `
+    SELECT u.id, u.name, u.email, u.is_active AS status, u.created_at, u.updated_at, r.name AS role
     FROM users AS u
     JOIN roles AS r ON u.role_id = r.id
-    `);
+  `;
 
-  return stmt.all();
+  const result = await db.query(query);
+  return result.rows;
 }
 
-function getUserById(id) {
-  const stmt = db.prepare(`
-    SELECT u.id, u.name, u.email, u.is_active AS status, u.created_at, u.updated_at , r.name AS role
+async function getUserById(id) {
+  const query = `
+    SELECT u.id, u.name, u.email, u.is_active AS status, u.created_at, u.updated_at, r.name AS role
     FROM users AS u
     JOIN roles AS r ON u.role_id = r.id
-    WHERE u.id = ?
-    `);
+    WHERE u.id = $1
+  `;
 
-  return stmt.get(id);
+  const result = await db.query(query, [id]);
+  return result.rows[0];
 }
 
-function updateUserRole(id, role_id) {
-  const stmt = db.prepare(`
+async function updateUserRole(id, role_id) {
+  const query = `
     UPDATE users
-    SET role_id = ?, updated_at = datetime('now')
-    WHERE id = ?
-    `);
+    SET role_id = $1, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2
+    RETURNING id, name, email, role_id, is_active, created_at, updated_at
+  `;
 
-  return stmt.run(role_id, id);
+  const result = await db.query(query, [role_id, id]);
+  return result.rows[0];
 }
 
-function updateUserStatus(id, status) {
-  const stmt = db.prepare(`
+async function updateUserStatus(id, status) {
+  const query = `
     UPDATE users
-    SET is_active = ?, updated_at = datetime('now')
-    WHERE id = ?
-    `);
+    SET is_active = $1, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2
+    RETURNING id, name, email, role_id, is_active, created_at, updated_at
+  `;
 
-  return stmt.run(status, id);
+  const result = await db.query(query, [status, id]);
+  return result.rows[0];
 }
 
 const userRepository = {

@@ -1,11 +1,10 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import pg from 'pg';
+import 'dotenv/config';
 
-const fileName = fileURLToPath(import.meta.url);
-const dirName = path.dirname(fileName);
-const dbPath = path.join(dirName, '../database/finance.db');
+const { Pool } = pg;
 
-const db = new Database(dbPath);
+const db = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
 export default db;

@@ -1,104 +1,126 @@
 import db from '../../../config/db.js';
 
-function insertRecord(record) {
-  const stmt = db.prepare(`
-  INSERT INTO financial_records(amount, type, category, record_date, note, created_by) VALUES(?, ?, ?, ?, ?, ?)
-  `);
+async function insertRecord(record) {
+  const query = `
+    INSERT INTO financial_records (amount, type, category, record_date, note, created_by)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING id, amount, type, category, record_date, note, created_by, created_at, updated_at
+  `;
 
-  return stmt.run(record.amount, record.type, record.category, record.record_date, record.note, record.created_by);
+  const values = [
+    record.amount,
+    record.type,
+    record.category,
+    record.record_date,
+    record.note,
+    record.created_by
+  ];
+
+  const result = await db.query(query, values);
+  return result.rows[0];
 }
 
-function getRecords(filters) {
+async function getRecords(filters) {
   let query = `
     SELECT r.id, r.amount, r.type, r.category, r.record_date, r.note, u.name AS created_by, r.created_at, r.updated_at
     FROM financial_records AS r
     JOIN users AS u ON r.created_by = u.id
     WHERE 1=1
-    `;
-  const parameters = [];
+  `;
+
+  const values = [];
 
   if (filters.type) {
-    query += ` AND r.type = ? `;
-    parameters.push(filters.type);
+    values.push(filters.type);
+    query += ` AND r.type = $${values.length} `;
   }
 
   if (filters.category) {
-    query += ` AND r.category = ? `;
-    parameters.push(filters.category);
+    values.push(filters.category);
+    query += ` AND r.category = $${values.length} `;
   }
 
   if (filters.from && filters.to) {
-    query += ` AND r.record_date BETWEEN ? AND ? `;
-    parameters.push(filters.from, filters.to);
+    values.push(filters.from);
+    query += ` AND r.record_date >= $${values.length} `;
+
+    values.push(filters.to);
+    query += ` AND r.record_date <= $${values.length} `;
   }
 
-  query += `LIMIT ? OFFSET ?`
-  parameters.push(filters.limit, filters.offset);
+  values.push(filters.limit);
+  query += ` LIMIT $${values.length} `;
 
-  const stmt = db.prepare(query);
+  values.push(filters.offset);
+  query += ` OFFSET $${values.length} `;
 
-  return stmt.all(...parameters);
+  const result = await db.query(query, values);
+  return result.rows;
 }
 
-function getRecordById(id) {
-  const stmt = db.prepare(`
+async function getRecordById(id) {
+  const query = `
     SELECT r.id, r.amount, r.type, r.category, r.record_date, r.note, u.name AS created_by, r.created_at, r.updated_at
     FROM financial_records AS r
-    JOIN users AS u ON r.created_by = u.id  
-    WHERE r.id = ?
-    `);
+    JOIN users AS u ON r.created_by = u.id
+    WHERE r.id = $1
+  `;
 
-  return stmt.get(id);
+  const result = await db.query(query, [id]);
+  return result.rows[0];
 }
 
-function updateRecord(record) {
+async function updateRecord(record) {
+  const fields = [];
   const values = [];
-  const parameters = [];
 
-
-  if (record.amount) {
-    values.push(` amount = ? `);
-    parameters.push(record.amount);
+  if (record.amount != null) {
+    values.push(record.amount);
+    fields.push(`amount = $${values.length}`);
   }
 
   if (record.type) {
-    values.push(` type = ? `);
-    parameters.push(record.type);
+    values.push(record.type);
+    fields.push(`type = $${values.length}`);
   }
 
   if (record.category) {
-    values.push(` category = ? `);
-    parameters.push(record.category);
+    values.push(record.category);
+    fields.push(`category = $${values.length}`);
   }
 
   if (record.record_date) {
-    values.push(` record_date = ? `);
-    parameters.push(record.record_date);
+    values.push(record.record_date);
+    fields.push(`record_date = $${values.length}`);
   }
 
   if (record.note) {
-    values.push(` note = ? `);
-    parameters.push(record.note);
+    values.push(record.note);
+    fields.push(`note = $${values.length}`);
   }
+
+  values.push(record.id);
 
   const query = `
     UPDATE financial_records
-    SET ${values.join(', ')}, updated_at = datetime('now')
-    WHERE id = ?
-    `;
-  parameters.push(record.id);
-  const stmt = db.prepare(query);
+    SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $${values.length}
+    RETURNING id, amount, type, category, record_date, note, created_by, created_at, updated_at
+  `;
 
-  return stmt.run(...parameters);
+  const result = await db.query(query, values);
+  return result.rows[0];
 }
 
-function deleteRecord(id) {
-  const stmt = db.prepare(`
+async function deleteRecord(id) {
+  const query = `
     DELETE FROM financial_records
-    WHERE id = ?
-    `);
+    WHERE id = $1
+    RETURNING id
+  `;
 
-  return stmt.run(id);
+  const result = await db.query(query, [id]);
+  return result.rows[0];
 }
 
 const recordRepository = {
@@ -107,6 +129,6 @@ const recordRepository = {
   getRecordById,
   updateRecord,
   deleteRecord
-}
+};
 
 export default recordRepository;

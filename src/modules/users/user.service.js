@@ -4,30 +4,35 @@ import bcrypt from 'bcrypt';
 
 class UserService {
   async createUser({ name, email, password, role_id }) {
-    const emailExists = userRepository.findUserByEmail(email);
+    const emailExists = await userRepository.findUserByEmail(email);
 
     if (emailExists) {
       throw new AppError('email already exists', 409);
     }
 
     const password_hash = await bcrypt.hash(password, 10);
-    const result = userRepository.insertUser({ name, email, password_hash, role_id });
-
-    return {
-      id: result.lastInsertRowid,
+    const user = await userRepository.insertUser({
       name,
       email,
+      password_hash,
       role_id
+    });
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role_id: user.role_id
     };
   }
 
   async getUsers() {
-    const users = userRepository.getUsers();
+    const users = await userRepository.getUsers();
     return users;
   }
 
   async getUser(id) {
-    const user = userRepository.getUserById(id);
+    const user = await userRepository.getUserById(id);
 
     if (!user) {
       throw new AppError('user not found', 404);
@@ -37,27 +42,25 @@ class UserService {
   }
 
   async updateUserRole(id, role_id) {
-    const user = userRepository.getUserById(id);
+    const user = await userRepository.getUserById(id);
 
     if (!user) {
       throw new AppError('user not found', 404);
     }
 
-    userRepository.updateUserRole(id, role_id);
-
-    return userRepository.getUserById(id);
+    const updatedUser = await userRepository.updateUserRole(id, role_id);
+    return updatedUser;
   }
 
   async updateUserStatus(id, status) {
-    const user = userRepository.getUserById(id);
+    const user = await userRepository.getUserById(id);
 
     if (!user) {
       throw new AppError('user not found', 404);
     }
 
-    userRepository.updateUserStatus(id, status);
-
-    return userRepository.getUserById(id);
+    const updatedUser = await userRepository.updateUserStatus(id, status);
+    return updatedUser;
   }
 }
 
