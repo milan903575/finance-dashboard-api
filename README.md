@@ -80,16 +80,18 @@ npm install
 
 ### 2. Configure environment
 
-Create a `.env` file and configure your PostgreSQL connection:
+Create a `.env` file and add your PostgreSQL connection string:
 
 ```env
 PORT=3000
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/finance
+```
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=your_password
-DB_NAME=finance
+Example:
+
+```env
+PORT=3000
+DATABASE_URL=postgresql://postgres:Milan321@localhost:5432/finance
 ```
 
 ### 3. Initialise the database
@@ -118,6 +120,23 @@ npm start
 ```
 
 Server runs at `http://localhost:3000`
+
+---
+
+## Database Connection
+
+This project uses `pg` with a PostgreSQL connection string from `.env`.
+
+```js
+import { Pool } from 'pg';
+import 'dotenv/config';
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export default pool;
+```
 
 ---
 
@@ -300,8 +319,6 @@ GET /api/records?type=income&from=2024-01-01&to=2024-03-31&page=1&limit=10
 ```
 
 #### Monthly Trends — `GET /api/dashboard/trends`
-
-> Returns the most recent 5 months
 
 ```json
 {
