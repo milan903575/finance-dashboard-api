@@ -386,30 +386,9 @@ Validation is handled by a custom `validator.middleware.js` — no third-party l
 
 ---
 
-## Assumptions
-
-- Mock auth is intentional — the assignment permits it and the focus is on backend structure and access control logic
-- Each user is assigned exactly one role
-
----
-
 ## Tradeoffs
 
 - The `DELETE /api/records/:id` endpoint returns a `200` status with a success message instead of the standard `204 No Content` to keep the response format consistent
-
----
-
-## Optional Features Implemented
-
-- [x] Pagination for record listing
-- [x] Filter support (type, category, date range)
-- [x] Seed script with realistic data
-- [x] Centralized error handling
-- [x] Custom validation middleware
-- [x] Role-based access control middleware
-- [x] Consistent response helper
-- [x] Database migration to PostgreSQL
-- [x] Database indexes for optimised query performance
 
 ---
 
